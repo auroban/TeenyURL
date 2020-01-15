@@ -3,25 +3,38 @@ package com.example.auro.teenyurl.models.url;
 import java.util.Date;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Document
+@Document("urls")
 @ToString
 @Getter
-@Setter
+@RequiredArgsConstructor
 public class URLEntity {
 	
-	@Id
-	private Long id;
+//	@Id
+//	private long id;
 	
-	private String originalUrl;
+	@NonNull
+	@Indexed(unique = true)
+	private final String originalUrl;
+	
+	@Setter
+	@Indexed(unique = true)
 	private String shortUrl;
-	private Date createdAt;
-	private Date updatedAt;
+	
+	
+	private Date createdAt = new Date();
+	
+	@Setter
+	private Date updatedAt = new Date();
 	
 
 }

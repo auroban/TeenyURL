@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.auro.teenyurl.models.api.ApiRequest;
 import com.example.auro.teenyurl.models.api.ApiResponse;
-import com.example.auro.teenyurl.services.interfaces.URLManager;
+import com.example.auro.teenyurl.services.interfaces.URLManagerService;
 
 @RestController
 @RequestMapping("/lookup")
@@ -22,7 +22,7 @@ public class URLLookUpController {
 	private static final Logger LOG = LogManager.getLogger(URLLookUpController.class);
 	
 	@Autowired
-	private URLManager urlManager;
+	private URLManagerService urlManager;
 
 	@PostMapping("/")
 	public ResponseEntity<ApiResponse> lookUpUsingLongUrl(@RequestBody ApiRequest apiRequest, ServletRequest servletRequest) {
