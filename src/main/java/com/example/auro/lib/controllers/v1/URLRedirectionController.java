@@ -4,7 +4,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
@@ -34,20 +33,17 @@ public class URLRedirectionController {
 		return new ResponseEntity<String>("Hey There!! Nothing for you here I guess", HttpStatus.OK);
 	}
 
-	
-	@GetMapping("{id}")
-	@Cacheable(value = "url-single", key = "#id", unless = "#result.view!=\"redirect:/notfound\"")
-	public ModelAndView redirect(@PathVariable("id") String id, ServletRequest servletRequest,
-			ServletResponse servletResponse) {
-		HttpServletRequest request = HttpServletRequest.class.cast(servletRequest);
-		LOG.info("Redirection request from: {} for Short URL Key: {}", request.getRemoteAddr(), id);
+	@GetMapping("{shortUrlKey}")
+	@Cacheable(value = "url-single", key = "#shortUrlKey", unless = "#result.getViewName().equals(\"redirect:/notfound\")")
+	public ModelAndView redirect(@PathVariable("shortUrlKey") final String shortUrlKey, ServletRequest serveRequest) {
+		HttpServletRequest request = HttpServletRequest.class.cast(serveRequest);
+		LOG.info("Redirection request coming from {} for Short URL Key: {}", request.getRemoteAddr(), shortUrlKey);
 		try {
-			Optional<String> originalUrlOptional = urlManagerService.retrieveOriginalUrl(id);
-			if (originalUrlOptional.isPresent() && !StringUtils.isEmpty(originalUrlOptional.get())) {
-				LOG.info("Found Original URL: {} for Short URL Key: {}", originalUrlOptional.get(), id);
-				return new ModelAndView("redirect:https://" + originalUrlOptional.get());
+			Optional<String> originalUrl = urlManagerService.retrieveOriginalUrl(shortUrlKey);
+			if (originalUrl.isPresent() && StringUtils.hasText(originalUrl.get())) {
+				LOG.info("Redirecting to Original URL: " + originalUrl.get());
+				return new ModelAndView("redirect:" + originalUrl.get());
 			}
-
 		} catch (NoSuchElementException e) {
 			LOG.error("Error while redirecting: {}", e.getMessage(), e);
 		}
@@ -56,7 +52,7 @@ public class URLRedirectionController {
 
 	@GetMapping("/notfound")
 	public ResponseEntity<String> noResourceFound() {
-		LOG.info("Resource not found");
+		LOG.error("Resource not found");
 		return new ResponseEntity<String>("The Resource you're looking for could not be found", HttpStatus.NOT_FOUND);
 	}
 

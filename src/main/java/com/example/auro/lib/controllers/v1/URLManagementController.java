@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.servlet.ServletRequest;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,7 @@ import com.example.auro.lib.services.interfaces.URLManagerService;
 public class URLManagementController {
 
 	private static final Logger LOG = LogManager.getLogger(URLManagementController.class);
+	private static final UrlValidator URL_VALIDATOR = new UrlValidator();
 
 	@Autowired
 	private URLManagerService urlManagerService;
@@ -40,9 +42,16 @@ public class URLManagementController {
 	public ResponseEntity<ApiResponse> createShortUrl(@RequestBody ApiRequest apiRequest, ServletRequest servletRequest)
 			throws Exception {
 		LOG.info("Incoming Request for creating short URL: {}", apiRequest);
-		String shortUrl;
-		shortUrl = urlManagerService.createShortUrlKey(apiRequest.getLongUrl()).get();
 		ApiResponse response = new ApiResponse();
+		String shortUrl;
+		String longUrl = apiRequest.getLongUrl();
+		if (!StringUtils.hasText(longUrl) || !URL_VALIDATOR.isValid(longUrl)) {
+			response.setStatus(ApiRequestStatus.FAILURE);
+			response.setMessage("Invalid URL. Please ensure the URL is not missing any URL scemes like http, https or ftp");
+			response.setErrorCode(ApiRequestErrorCode.INVALID_REQUEST_PARAMETER);
+			return new ResponseEntity<ApiResponse>(response, HttpStatus.BAD_REQUEST);
+		}
+		shortUrl = urlManagerService.createShortUrlKey(apiRequest.getLongUrl()).get();
 		response.setStatus(ApiRequestStatus.SUCCESS);
 		response.setErrorCode(null);
 		response.setMessage("Successfully created short URL");

@@ -1,4 +1,4 @@
-package com.example.auro.lib.controllers;
+package com.example.auro.lib.errorhandlers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
