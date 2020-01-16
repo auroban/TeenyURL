@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -33,7 +34,9 @@ public class URLRedirectionController {
 		return new ResponseEntity<String>("Hey There!! Nothing for you here I guess", HttpStatus.OK);
 	}
 
+	
 	@GetMapping("{id}")
+	@Cacheable(value = "url-single", key = "#id", unless = "#result.view!=\"redirect:/notfound\"")
 	public ModelAndView redirect(@PathVariable("id") String id, ServletRequest servletRequest,
 			ServletResponse servletResponse) {
 		HttpServletRequest request = HttpServletRequest.class.cast(servletRequest);
