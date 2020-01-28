@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +50,7 @@ public class URLManagerServiceImpl implements URLManagerService {
 	}
 
 	@Override
+	@Cacheable(value = "url-single", key = "#shortUrlKey", unless = "#result == null")
 	public Optional<String> retrieveOriginalUrl(String shortUrlKey) throws NoSuchElementException {
 		LOG.info("Finding original URL with Short URL Key: {}", shortUrlKey);
 		Optional<URLEntity> urlEntityOptional = urlRepository.findOneByShortUrlKey(shortUrlKey);

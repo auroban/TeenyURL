@@ -25,5 +25,4 @@ public class GeneralErrorHandler {
 		apiResponse.setErrorCode(ApiRequestErrorCode.INTERNAL_SERVER_ERROR);
 		return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-
 }
