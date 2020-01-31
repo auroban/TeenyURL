@@ -9,6 +9,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,10 @@ public class URLManagementController {
 
 	@Autowired
 	private URLManagerService urlManagerService;
+	
+	
+	@Value("${shorturl.path}")
+	private String shortUrlPath;
 
 	@PostMapping
 	public ResponseEntity<ApiResponse> createShortUrl(@RequestBody ApiRequest apiRequest,
@@ -60,7 +65,8 @@ public class URLManagementController {
 			response.setStatus(ApiRequestStatus.SUCCESS);
 			response.setErrorCode(null);
 			response.setMessage("Successfully created short URL");
-			response.setResponse("localhost:8080/" + shortUrl);
+			response.setResponse(shortUrlPath + shortUrl);
+			LOG.debug("Outgoing Response: {}", response);
 			return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
 
 		} catch (DuplicateKeyException e) {
