@@ -1,4 +1,4 @@
-package com.example.auro.lib.controllers.v1;
+package in.turls.lib.controllers.v1;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.example.auro.lib.services.interfaces.URLManagerService;
+import in.turls.lib.services.interfaces.URLManagerService;
 
 @RestController("/")
 public class URLRedirectionController {

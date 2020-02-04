@@ -1,11 +1,11 @@
-package com.example.auro.lib.repositories;
+package in.turls.lib.repositories;
 
 import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.auro.lib.models.url.URLEntity;
+import in.turls.lib.models.url.URLEntity;
 
 @Repository
 public interface URLRepository extends MongoRepository<URLEntity, String> {

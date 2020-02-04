@@ -1,4 +1,4 @@
-package com.example.auro.lib.configurations;
+package in.turls.lib.configurations;
 
 import java.util.HashMap;
 import java.util.Map;

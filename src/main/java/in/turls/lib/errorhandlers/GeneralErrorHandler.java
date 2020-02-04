@@ -1,4 +1,4 @@
-package com.example.auro.lib.errorhandlers;
+package in.turls.lib.errorhandlers;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.example.auro.lib.constants.ApiRequestErrorCode;
-import com.example.auro.lib.constants.ApiRequestStatus;
-import com.example.auro.lib.models.api.ApiResponse;
+import in.turls.lib.constants.ApiRequestErrorCode;
+import in.turls.lib.constants.ApiRequestStatus;
+import in.turls.lib.models.api.ApiResponse;
 
 @RestControllerAdvice
 public class GeneralErrorHandler {

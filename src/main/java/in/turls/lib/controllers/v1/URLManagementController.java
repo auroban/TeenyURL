@@ -1,4 +1,4 @@
-package com.example.auro.lib.controllers.v1;
+package in.turls.lib.controllers.v1;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -10,8 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -24,11 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.auro.lib.constants.ApiRequestErrorCode;
-import com.example.auro.lib.constants.ApiRequestStatus;
-import com.example.auro.lib.models.api.ApiRequest;
-import com.example.auro.lib.models.api.ApiResponse;
-import com.example.auro.lib.services.interfaces.URLManagerService;
+import in.turls.lib.constants.ApiRequestErrorCode;
+import in.turls.lib.constants.ApiRequestStatus;
+import in.turls.lib.models.api.ApiRequest;
+import in.turls.lib.models.api.ApiResponse;
+import in.turls.lib.services.interfaces.URLManagerService;
+import lombok.NonNull;
 
 @RestController
 @RequestMapping("/v1/url")
@@ -39,52 +38,36 @@ public class URLManagementController {
 
 	@Autowired
 	private URLManagerService urlManagerService;
-	
-	
-	@Value("${shorturl.path}")
-	private String shortUrlPath;
+
+	@Value("${short_url.domain}")
+	private String shortUrlDomain;
 
 	@PostMapping
 	public ResponseEntity<ApiResponse> createShortUrl(@RequestBody ApiRequest apiRequest,
 			ServletRequest servletRequest) {
 
-		try {
-			LOG.info("Incoming Request for creating short URL: {}", apiRequest);
-			ApiResponse response = new ApiResponse();
-			String shortUrl;
-			String longUrl = apiRequest.getLongUrl();
-			if (!StringUtils.hasText(longUrl) || !URL_VALIDATOR.isValid(longUrl)) {
-				LOG.error("Invalid Long URL:{}", longUrl);
-				response.setStatus(ApiRequestStatus.FAILURE);
-				response.setMessage(
-						"Invalid URL. Please ensure the URL is not missing any URL scemes like http, https or ftp");
-				response.setErrorCode(ApiRequestErrorCode.INVALID_REQUEST_PARAMETER);
-				return new ResponseEntity<ApiResponse>(response, HttpStatus.BAD_REQUEST);
-			}
-			shortUrl = urlManagerService.createShortUrlKey(apiRequest.getLongUrl()).get();
-			response.setStatus(ApiRequestStatus.SUCCESS);
-			response.setErrorCode(null);
-			response.setMessage("Successfully created short URL");
-			response.setResponse(shortUrlPath + shortUrl);
-			LOG.debug("Outgoing Response: {}", response);
-			return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
-
-		} catch (DuplicateKeyException e) {
-			LOG.error("Duplicate Key found while creating short URL key\n", e);
-			String errorMessage = e.getMessage();
-			if (errorMessage.contains("originalUrl")) {
-				ApiResponse errorResponse = new ApiResponse();
-				errorResponse.setErrorCode(ApiRequestErrorCode.DUPLICATE_URL);
-				errorResponse.setMessage("The URL " + apiRequest.getLongUrl() + " is already in existence");
-				errorResponse.setStatus(ApiRequestStatus.FAILURE);
-				return new ResponseEntity<ApiResponse>(errorResponse, HttpStatus.CONFLICT);
-			} else {
-				throw e;
-			}
+		LOG.info("Incoming Request for creating short URL: {}", apiRequest);
+		ApiResponse response = new ApiResponse();
+		String shortUrl;
+		String longUrl = apiRequest.getLongUrl();
+		if (!StringUtils.hasText(longUrl) || !URL_VALIDATOR.isValid(longUrl)) {
+			LOG.error("Invalid Long URL:{}", longUrl);
+			response.setStatus(ApiRequestStatus.FAILURE);
+			response.setMessage(
+					"Invalid URL. Please ensure the URL is not missing any URL scemes like http, https or ftp");
+			response.setErrorCode(ApiRequestErrorCode.INVALID_REQUEST_PARAMETER);
+			return new ResponseEntity<ApiResponse>(response, HttpStatus.BAD_REQUEST);
 		}
+		shortUrl = urlManagerService.createShortUrlKey(apiRequest.getLongUrl()).get();
+		response.setStatus(ApiRequestStatus.SUCCESS);
+		response.setErrorCode(null);
+		response.setMessage("Successfully created short URL");
+		response.setResponse(shortUrlDomain + shortUrl);
+		LOG.debug("Outgoing Response: {}", response);
+		return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
 	}
 
-	@GetMapping()
+	@GetMapping
 	public ResponseEntity<ApiResponse> getLongUrl(@RequestParam("id") String id, ServletRequest servletRequest) {
 
 		LOG.info("Incoming Request for getting long URL: {}", id);
@@ -115,9 +98,8 @@ public class URLManagementController {
 		return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.NOT_FOUND);
 	}
 
-	@CacheEvict(value = "url-single", key = "#id")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse> deleteUrlEntry(@PathVariable("id") String id) {
+	public ResponseEntity<ApiResponse> deleteUrlEntry(@PathVariable("id") @NonNull String id) {
 
 		LOG.info("Incoming request for deleting URL entry for Short URL Key: {}", id);
 		ApiResponse apiResponse = new ApiResponse();
@@ -143,7 +125,7 @@ public class URLManagementController {
 		}
 
 		apiResponse.setStatus(ApiRequestStatus.FAILURE);
-		apiResponse.setMessage("Failed to delete URL");
+		apiResponse.setMessage("Failed to delete URL since given short URL doesn't exist");
 		return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
 
 	}

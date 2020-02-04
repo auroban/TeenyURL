@@ -1,9 +1,11 @@
-package com.example.auro.lib.models.api;
+package in.turls.lib.models.api;
 
-import com.example.auro.lib.constants.ApiRequestErrorCode;
-import com.example.auro.lib.constants.ApiRequestStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+import in.turls.lib.constants.ApiRequestErrorCode;
+import in.turls.lib.constants.ApiRequestStatus;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;

@@ -1,20 +1,24 @@
-package com.example.auro.lib.services.impls;
+package in.turls.lib.services.impls;
 
 import java.util.Base64;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import com.example.auro.lib.models.url.URLEntity;
-import com.example.auro.lib.repositories.URLRepository;
-import com.example.auro.lib.services.interfaces.CounterService;
-import com.example.auro.lib.services.interfaces.URLManagerService;
+import in.turls.lib.models.url.URLEntity;
+import in.turls.lib.repositories.URLRepository;
+import in.turls.lib.services.interfaces.CounterService;
+import in.turls.lib.services.interfaces.URLManagerService;
 
 @Service
 public class URLManagerServiceImpl implements URLManagerService {
@@ -63,6 +67,7 @@ public class URLManagerServiceImpl implements URLManagerService {
 	}
 
 	@Override
+	@CacheEvict(value = "url-single", key = "#shortUrlKey")
 	public Optional<Boolean> deleteUrlEntity(String shortUrlKey) throws NoSuchElementException {
 		LOG.info("Deleting URL Entity having Short URL Key: {}", shortUrlKey);
 		Optional<URLEntity> urlEntityOptional = urlRepository.findOneByShortUrlKey(shortUrlKey);

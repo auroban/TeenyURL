@@ -1,4 +1,4 @@
-package com.example.auro.lib.models.api;
+package in.turls.lib.models.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

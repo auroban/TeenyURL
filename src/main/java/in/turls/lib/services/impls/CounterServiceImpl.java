@@ -1,4 +1,4 @@
-package com.example.auro.lib.services.impls;
+package in.turls.lib.services.impls;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.example.auro.lib.services.interfaces.CounterService;
+import in.turls.lib.services.interfaces.CounterService;
 
 
 @Service
@@ -28,7 +28,7 @@ public class CounterServiceImpl implements CounterService {
 	
 	private AtomicLong counter;
 	
-	@Value("${counterfile.path}")
+	@Value("${counter_file.location}")
 	private String counterFilePath;
 
 	@Override

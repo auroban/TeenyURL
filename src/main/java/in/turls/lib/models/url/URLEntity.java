@@ -1,4 +1,4 @@
-package com.example.auro.lib.models.url;
+package in.turls.lib.models.url;
 
 import java.util.Date;
 
@@ -23,7 +23,6 @@ public class URLEntity {
 	private String id;
 	
 	@NonNull
-	@Indexed(unique = true)
 	private final String originalUrl;
 	
 	@Setter

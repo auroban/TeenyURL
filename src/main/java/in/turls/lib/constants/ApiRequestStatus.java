@@ -1,4 +1,4 @@
-package com.example.auro.lib.constants;
+package in.turls.lib.constants;
 
 public enum ApiRequestStatus {
 
