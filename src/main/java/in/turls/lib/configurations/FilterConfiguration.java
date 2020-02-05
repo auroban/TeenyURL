@@ -1,28 +1,31 @@
 package in.turls.lib.configurations;
 
+import javax.servlet.Filter;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import in.turls.lib.filters.IPUsageLimitFilter;
+import in.turls.lib.filters.ApiUsageLimitFilter;
 
 @Configuration
 public class FilterConfiguration {
 	
 	@Bean
-	public FilterRegistrationBean<IPUsageLimitFilter> ipUsageLimitFilterRegistrationBean() {
+	public FilterRegistrationBean<Filter> apiUsageLimitFilterRegistrationBean(@Autowired ApiUsageLimitFilter apiUsageLimitFilter) {
 		
-		FilterRegistrationBean<IPUsageLimitFilter> registrationBean = new FilterRegistrationBean<>();
-		registrationBean.setFilter(ipUsageLimitFilter());
+		FilterRegistrationBean<Filter> registrationBean = new FilterRegistrationBean<>();
+		registrationBean.setFilter(apiUsageLimitFilter);
 		registrationBean.addUrlPatterns("/v1/url/*");
-		registrationBean.setName("ipUsageLimitFiler");
+		registrationBean.setName("apiUsageLimitFiler");
 		return registrationBean;
 	}
 	
 	
 	@Bean
-	public IPUsageLimitFilter ipUsageLimitFilter() {
-		return new IPUsageLimitFilter();
+	public ApiUsageLimitFilter apiUsageLimitFilter() {
+		return new ApiUsageLimitFilter();
 	}
 
 }
