@@ -48,7 +48,7 @@ public class ApiUsageLimitFilter implements Filter {
 			LOG.warn("IP: {} reached its usage limit. Blocking any further calls", httpServletRequest.getRemoteAddr());
 			ApiResponse errorResponse = new ApiResponse();
 			errorResponse.setStatus(ApiRequestStatus.FAILURE);
-			errorResponse.setMessage("You have reached the API usage limit. Only 10 requests allowed per hour. Please try after an hour");
+			errorResponse.setMessage("You have reached the API usage limit. Only 10 requests allowed per hour. Please try after the time specified in Retry-After header");
 			errorResponse.setErrorCode(ApiRequestErrorCode.API_USAGE_LIMIT_REACHED);
 			String errorResponseString = getResponseAsString(errorResponse);
 			LOG.info("Error response as String:{}", errorResponseString);
