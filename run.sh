@@ -1,0 +1,1 @@
+clear && ./gradlew clean build -x test && java -jar build/libs/TeenyURL-0.0.1-SNAPSHOT.jar --spring.config.location="file:./application-dev.yml"
