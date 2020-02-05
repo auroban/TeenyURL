@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +44,7 @@ public class URLManagementController {
 	private String shortUrlDomain;
 
 	@PostMapping
-	public ResponseEntity<ApiResponse> createShortUrl(@RequestBody ApiRequest apiRequest,
+	public ResponseEntity<ApiResponse> createShortUrl(@RequestBody @Validated ApiRequest apiRequest,
 			ServletRequest servletRequest) {
 
 		LOG.info("Incoming Request for creating short URL: {}", apiRequest);

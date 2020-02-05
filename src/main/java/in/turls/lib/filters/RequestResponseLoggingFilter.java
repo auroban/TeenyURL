@@ -12,9 +12,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 @Component
+@Order(1)
 public class RequestResponseLoggingFilter implements Filter {
 	
 	private static final Logger LOG = LogManager.getLogger(RequestResponseLoggingFilter.class);

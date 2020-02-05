@@ -1,5 +1,9 @@
 package in.turls.lib.models.api;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.Length;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
@@ -12,6 +16,7 @@ import lombok.ToString;
 public class ApiRequest {
 	
 	@JsonProperty("url")
-	private String longUrl;
-	
+	@NotNull
+	@Length(min = 8, max = 200)
+	private String longUrl;	
 }
