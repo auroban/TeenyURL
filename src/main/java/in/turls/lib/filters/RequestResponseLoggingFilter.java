@@ -23,7 +23,7 @@ public class RequestResponseLoggingFilter implements Filter {
 			throws IOException, ServletException {
 		
 		HttpServletRequest httpRequest = HttpServletRequest.class.cast(request);
-		LOG.info("Logging Incoming Request at {} from {}", httpRequest.getRequestURI(), httpRequest.getRemoteAddr());
+		LOG.info("Logging Incoming Request at {} from {}", httpRequest.getRequestURI(), httpRequest.getHeader("X-Real-IP"));
 		chain.doFilter(request, response);
 	}
 

@@ -29,7 +29,7 @@ public class ApiUsageMonitorServiceImpl implements ApiUsageMonitorService {
 	@Override
 	public boolean isAllowed(HttpServletRequest request) {
 		
-		String ipAddress = request.getRemoteAddr();
+		String ipAddress = request.getHeader("X-Real-IP");
 		LOG.info("Checking API usage for IP: {}", ipAddress);
 		RMapCache<String, Integer> apiUsageMapCache = redissonClient.getMapCache(API_USAGE_MAP_NAME);
 		if (apiUsageMapCache.containsKey(ipAddress)) {
@@ -49,7 +49,7 @@ public class ApiUsageMonitorServiceImpl implements ApiUsageMonitorService {
 
 	@Override
 	public Long remainingTTL(HttpServletRequest request) {
-		String ipAddress = request.getRemoteAddr();
+		String ipAddress = request.getHeader("X-Real-IP");
 		LOG.info("Getting remaining TTL for IP {}", ipAddress);
 		long remainingTTL = redissonClient.getMapCache(API_USAGE_MAP_NAME).remainTimeToLive(ipAddress);
 		LOG.info("Remaining time for IP {}: {}", ipAddress, remainingTTL);

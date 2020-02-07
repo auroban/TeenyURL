@@ -8,13 +8,6 @@ group = 'in.turls'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '13'
 
-bootRun {
-
-	args = [
-		"--spring.config.location=file:/home/auro/Desktop/application-dev.yml"
-	]
-}
-
 configurations {
 	developmentOnly
 	runtimeClasspath {
@@ -25,6 +18,13 @@ configurations {
 	}
 	
 	
+}
+
+bootRun {
+
+	args = [
+		"--spring.config.location=file:/home/auro/Desktop/application-dev.yml"
+	]
 }
 
 repositories {

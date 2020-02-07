@@ -12,3 +12,4 @@ counter_file:
   location: file:/home/auro/.teenyurlservice/counter.txt
 redisson:
   address: redis://127.0.0.1:6379
+  password:

@@ -40,12 +40,12 @@ public class ApiUsageLimitFilter implements Filter {
 		HttpServletResponse httpServletResponse = HttpServletResponse.class.cast(response);
 		try {
 		
-		LOG.info("Checking usgae limit for IP: {}", httpServletRequest.getRemoteAddr());
+		LOG.info("Checking usgae limit for IP: {}", httpServletRequest.getHeader("X-Real-IP"));
 		if (apiUsageMonitorService.isAllowed(httpServletRequest)) {
-			LOG.info("IP: {} allowed", httpServletRequest.getRemoteAddr());
+			LOG.info("IP: {} allowed", httpServletRequest.getHeader("X-Real-IP"));
 			chain.doFilter(httpServletRequest, response);
 		} else {
-			LOG.warn("IP: {} reached its usage limit. Blocking any further calls", httpServletRequest.getRemoteAddr());
+			LOG.warn("IP: {} reached its usage limit. Blocking any further calls", httpServletRequest.getHeader("X-Real-IP"));
 			ApiResponse errorResponse = new ApiResponse();
 			errorResponse.setStatus(ApiRequestStatus.FAILURE);
 			errorResponse.setMessage("You have reached the API usage limit. Only 10 requests allowed per hour. Please try after the time specified in Retry-After header");
