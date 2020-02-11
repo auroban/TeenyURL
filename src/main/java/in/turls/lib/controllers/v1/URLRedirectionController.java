@@ -4,7 +4,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,8 +33,7 @@ public class URLRedirectionController {
 
 	@GetMapping("{shortUrlKey}")
 	public ModelAndView redirect(@PathVariable("shortUrlKey") final String shortUrlKey, ServletRequest serveRequest) {
-		HttpServletRequest request = HttpServletRequest.class.cast(serveRequest);
-		LOG.info("Redirection request coming from {} for Short URL Key: {}", request.getRemoteAddr(), shortUrlKey);
+		LOG.info("Redirection request coming for Short URL Key: {}", shortUrlKey);
 		try {
 			Optional<String> originalUrl = urlManagerService.retrieveOriginalUrl(shortUrlKey);
 			if (originalUrl.isPresent() && StringUtils.hasText(originalUrl.get())) {
@@ -51,7 +49,7 @@ public class URLRedirectionController {
 	@GetMapping("/notfound")
 	public ResponseEntity<String> noResourceFound() {
 		LOG.error("Resource not found");
-		return new ResponseEntity<String>("The Resource you're looking for could not be found", HttpStatus.NOT_FOUND);
+		return new ResponseEntity<String>("The resource you're looking for could not be located", HttpStatus.NOT_FOUND);
 	}
 
 }
