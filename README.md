@@ -1,6 +1,17 @@
 # TeenyURL
 A simple URL shortening application
 
+To check the app in action, kindly run the following **cURL** command
+
+```
+curl -X POST \
+  https://turls.in/v1/url/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+	"url" : "https://www.facebook.com"
+}'
+```
+
 ## Getting Started
 This project requires **Redis** and **MongoDB** along with **JDK 13** to run it locally. The configurations required for running this app and connecting it to Redis and Mongo are specified in **application-dev.yml** file.
 

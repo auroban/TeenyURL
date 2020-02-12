@@ -55,7 +55,7 @@ public class URLManagementController {
 			LOG.error("Invalid Long URL:{}", longUrl);
 			response.setStatus(ApiRequestStatus.FAILURE);
 			response.setMessage(
-					"Invalid URL. Please ensure the URL is not missing any URL scemes like http, https or ftp");
+					"Invalid URL. Please ensure the URL is not missing any URL scemes like http or https");
 			response.setErrorCode(ApiRequestErrorCode.INVALID_REQUEST_PARAMETER);
 			return new ResponseEntity<ApiResponse>(response, HttpStatus.BAD_REQUEST);
 		}
