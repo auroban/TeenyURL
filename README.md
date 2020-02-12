@@ -13,6 +13,7 @@ Please make a directory named ***.teenyurlservice*** under your home directory, 
 
 The app runs on port ***3001***, but this can be changed in the **application-dev.yml**
 
+### Running the app
 Once you have everything set up and running, please run the **run.sh** file given in this project directory
 
 ```
