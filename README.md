@@ -33,4 +33,19 @@ sh run.sh
 
 You should now have the app running and it can be seen on your `localhost:3001`
 
+### Testing it locally
+To test it locally, make a **POST** request to `localhost:3001/v1/url` with the following request body: 
+```
+{
+	"url" : "{your_long_url}"
+}
+```
+
+Eg. 
+```
+{
+	"url" : "http://iamtheproudownerofthelongestlongestlongestdomainnameinthisworld.com/"
+}
+```
+
 
