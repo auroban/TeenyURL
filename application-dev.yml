@@ -9,7 +9,7 @@ server:
 short_url:
   domain: localhost:3001/
 counter_file:
-  location: file:/home/auro/.teenyurlservice/counter.txt
+  location: file:${HOME}/.teenyurlservice/counter.txt
 redisson:
   address: redis://127.0.0.1:6379
   password:
