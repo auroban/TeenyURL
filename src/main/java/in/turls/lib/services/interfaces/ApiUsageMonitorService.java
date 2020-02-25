@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface ApiUsageMonitorService {
 	
-	boolean isAllowed(final HttpServletRequest request);
+	Boolean isAllowed(final HttpServletRequest request);
 	Long remainingTTL(final HttpServletRequest request);
-
 }

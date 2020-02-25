@@ -4,7 +4,6 @@ import java.util.Base64;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,7 @@ public class URLManagerServiceImpl implements URLManagerService {
 		LOG.info("Generated Short URL Key: {}", shortUrlKey);
 		urlEntity.setShortUrlKey(shortUrlKey);
 		urlRepository.save(urlEntity);
-		Optional<URLEntity> urlEntityOptional = urlRepository.findOneByShortUrlKey(shortUrlKey);		
+		Optional<URLEntity> urlEntityOptional = urlRepository.findOneByShortUrlKey(shortUrlKey);
 		LOG.info("Retrieved URL entity: {}", urlEntityOptional.get());
 		if (urlEntityOptional.isPresent()) {
 			return Optional.of(urlEntityOptional.get().getShortUrlKey());
@@ -80,15 +79,14 @@ public class URLManagerServiceImpl implements URLManagerService {
 
 	@Override
 	public Optional<String> retrieveShortUrl(String longUrl) throws NoSuchElementException {
-		
+
 		LOG.info("Finding with Original URL: {}", longUrl);
 		Optional<URLEntity> urlEntityOptional = urlRepository.findOneByOriginalUrl(longUrl);
 		if (urlEntityOptional.isPresent()) {
 			LOG.info("Retrieved URL Entity: {}", urlEntityOptional.get());
 			return Optional.of(urlEntityOptional.get().getShortUrlKey());
-		} 
+		}
 		LOG.info("No URL Entity found");
 		return Optional.empty();
 	}
-
 }

@@ -19,9 +19,9 @@ public class FilterConfiguration {
 		registrationBean.setFilter(apiUsageLimitFilter);
 		registrationBean.addUrlPatterns("/v1/url/*");
 		registrationBean.setName("apiUsageLimitFiler");
+		registrationBean.setOrder(2);
 		return registrationBean;
 	}
-	
 	
 	@Bean
 	public ApiUsageLimitFilter apiUsageLimitFilter() {

@@ -1,15 +1,14 @@
 package in.turls.lib.controllers.v1;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import javax.servlet.ServletRequest;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,25 +30,26 @@ public class URLRedirectionController {
 		return new ResponseEntity<String>("Hey There!! Nothing for you here I guess", HttpStatus.OK);
 	}
 
-	@GetMapping("{shortUrlKey}")
-	public ModelAndView redirect(@PathVariable("shortUrlKey") final String shortUrlKey, ServletRequest serveRequest) {
-		LOG.info("Redirection request coming for Short URL Key: {}", shortUrlKey);
-		try {
-			Optional<String> originalUrl = urlManagerService.retrieveOriginalUrl(shortUrlKey);
-			if (originalUrl.isPresent() && StringUtils.hasText(originalUrl.get())) {
-				LOG.info("Redirecting to Original URL: " + originalUrl.get());
-				return new ModelAndView("redirect:" + originalUrl.get());
-			}
-		} catch (NoSuchElementException e) {
-			LOG.error("Error while redirecting: {}", e.getMessage(), e);
-		}
-		return new ModelAndView("redirect:/notfound");
-	}
-
 	@GetMapping("/notfound")
 	public ResponseEntity<String> noResourceFound() {
 		LOG.error("Resource not found");
 		return new ResponseEntity<String>("The resource you're looking for could not be located", HttpStatus.NOT_FOUND);
+	}
+	
+	@Async
+	@GetMapping("{shortUrlKey}")
+	public CompletableFuture<ModelAndView> redirect(@PathVariable("shortUrlKey") final String shortUrlKey) {
+		LOG.info("Redirection request for Short URL Key: {}", shortUrlKey);
+		try {
+			Optional<String> originalUrlOptional = urlManagerService.retrieveOriginalUrl(shortUrlKey);
+			if (originalUrlOptional.isPresent() && StringUtils.hasText(originalUrlOptional.get())) {
+				LOG.info("Redirecting to {}", originalUrlOptional.get());
+				return CompletableFuture.completedFuture(new ModelAndView("redirect:" + originalUrlOptional.get()));
+			}
+		} catch (Exception e) {
+			LOG.error("Error while redirecting", e);
+		}
+		return CompletableFuture.completedFuture(new ModelAndView("redirect:/notfound"));
 	}
 
 }

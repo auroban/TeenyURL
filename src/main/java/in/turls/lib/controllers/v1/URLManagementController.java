@@ -2,8 +2,7 @@ package in.turls.lib.controllers.v1;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import javax.servlet.ServletRequest;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,9 +43,9 @@ public class URLManagementController {
 	@Value("${short_url.domain}")
 	private String shortUrlDomain;
 
+	@Async
 	@PostMapping
-	public ResponseEntity<ApiResponse> createShortUrl(@RequestBody @Validated ApiRequest apiRequest,
-			ServletRequest servletRequest) {
+	public CompletableFuture<ResponseEntity<ApiResponse>> createShortUrl(@RequestBody @Validated ApiRequest apiRequest) {
 
 		LOG.info("Incoming Request for creating short URL: {}", apiRequest);
 		ApiResponse response = new ApiResponse();
@@ -57,7 +57,7 @@ public class URLManagementController {
 			response.setMessage(
 					"Invalid URL. Please ensure the URL is not missing any URL scemes like http or https");
 			response.setErrorCode(ApiRequestErrorCode.INVALID_REQUEST_PARAMETER);
-			return new ResponseEntity<ApiResponse>(response, HttpStatus.BAD_REQUEST);
+			return CompletableFuture.completedFuture(new ResponseEntity<ApiResponse>(response, HttpStatus.BAD_REQUEST));
 		}
 		shortUrl = urlManagerService.createShortUrlKey(apiRequest.getLongUrl()).get();
 		response.setStatus(ApiRequestStatus.SUCCESS);
@@ -65,11 +65,12 @@ public class URLManagementController {
 		response.setMessage("Successfully created short URL");
 		response.setResponse(shortUrlDomain + shortUrl);
 		LOG.debug("Outgoing Response: {}", response);
-		return new ResponseEntity<ApiResponse>(response, HttpStatus.OK);
+		return CompletableFuture.completedFuture(new ResponseEntity<ApiResponse>(response, HttpStatus.OK));
 	}
 
+	@Async
 	@GetMapping
-	public ResponseEntity<ApiResponse> getLongUrl(@RequestParam("id") String id, ServletRequest servletRequest) {
+	public CompletableFuture<ResponseEntity<ApiResponse>> getLongUrl(@RequestParam("id") String id) {
 
 		LOG.info("Incoming Request for getting long URL: {}", id);
 		ApiResponse apiResponse = new ApiResponse();
@@ -78,7 +79,7 @@ public class URLManagementController {
 			apiResponse.setStatus(ApiRequestStatus.FAILURE);
 			apiResponse.setMessage("The given ID is invalid");
 			apiResponse.setErrorCode(ApiRequestErrorCode.INVALID_ID);
-			return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.BAD_REQUEST);
+			return CompletableFuture.completedFuture(new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.BAD_REQUEST));
 		}
 
 		try {
@@ -87,7 +88,7 @@ public class URLManagementController {
 				apiResponse.setStatus(ApiRequestStatus.SUCCESS);
 				apiResponse.setMessage("Found URL");
 				apiResponse.setResponse(longUrl.get());
-				return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
+				return CompletableFuture.completedFuture(new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK));
 			}
 
 		} catch (NoSuchElementException e) {
@@ -96,11 +97,12 @@ public class URLManagementController {
 		apiResponse.setStatus(ApiRequestStatus.FAILURE);
 		apiResponse.setMessage("No URL found for the given ID");
 		apiResponse.setErrorCode(ApiRequestErrorCode.URL_NOT_FOUND);
-		return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.NOT_FOUND);
+		return CompletableFuture.completedFuture(new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.NOT_FOUND));
 	}
 
+	@Async
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ApiResponse> deleteUrlEntry(@PathVariable("id") @NonNull String id) {
+	public CompletableFuture<ResponseEntity<ApiResponse>> deleteUrlEntry(@PathVariable("id") @NonNull String id) {
 
 		LOG.info("Incoming request for deleting URL entry for Short URL Key: {}", id);
 		ApiResponse apiResponse = new ApiResponse();
@@ -110,7 +112,7 @@ public class URLManagementController {
 				apiResponse.setStatus(ApiRequestStatus.FAILURE);
 				apiResponse.setMessage("Invalid ID");
 				apiResponse.setErrorCode(ApiRequestErrorCode.INVALID_ID);
-				return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.BAD_REQUEST);
+				return CompletableFuture.completedFuture(new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.BAD_REQUEST));
 			}
 
 			Optional<Boolean> deleted = urlManagerService.deleteUrlEntity(id);
@@ -119,7 +121,7 @@ public class URLManagementController {
 				LOG.info("Successfully deleted URL entry with Short URL Key: {}", id);
 				apiResponse.setStatus(ApiRequestStatus.SUCCESS);
 				apiResponse.setMessage("Successfully deleted URL");
-				return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
+				return CompletableFuture.completedFuture(new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK));
 			}
 		} catch (NoSuchElementException e) {
 			LOG.error("No Such URL Entity found with Short URL Key: {}", id);
@@ -127,7 +129,7 @@ public class URLManagementController {
 
 		apiResponse.setStatus(ApiRequestStatus.FAILURE);
 		apiResponse.setMessage("Failed to delete URL since given short URL doesn't exist");
-		return new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK);
+		return CompletableFuture.completedFuture(new ResponseEntity<ApiResponse>(apiResponse, HttpStatus.OK));
 
 	}
 
