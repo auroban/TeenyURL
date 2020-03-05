@@ -1,12 +1,11 @@
 package in.turls.lib.models.api;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 import in.turls.lib.constants.ApiRequestErrorCode;
 import in.turls.lib.constants.ApiRequestStatus;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -15,19 +14,22 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@JsonInclude(Include.NON_NULL)
-public class ApiResponse {
+public class ApiResponse<T> {
 	
-	@JsonProperty("status")
+	@Expose
+	@SerializedName("status")
 	private ApiRequestStatus status;
 	
-	@JsonProperty("message")
+	@Expose
+	@SerializedName("message")
 	private String message;
 	
-	@JsonProperty("response")
-	private String response;
+	@Expose
+	@SerializedName("response")
+	private T response;
 	
-	@JsonProperty("error")
+	@Expose
+	@SerializedName("error")
 	private ApiRequestErrorCode errorCode;
 
 }

@@ -57,6 +57,8 @@ dependencies {
 	
 	// https://mvnrepository.com/artifact/commons-validator/commons-validator
 	compile group: 'commons-validator', name: 'commons-validator', version: '1.6'	
+	
+	implementation 'com.google.code.gson:gson:2.8.6'
 }
 
 test {

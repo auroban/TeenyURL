@@ -1,12 +1,15 @@
-package in.turls.lib.models.url;
+package in.turls.lib.documents.url;
 
 import java.util.Date;
 
-import org.springframework.data.annotation.Id;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-
+import in.turls.lib.constants.UrlStatus;
+import in.turls.lib.documents.AbstractDocument;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -14,25 +17,33 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Document("urls")
-@ToString
+
 @Getter
+@ToString
 @RequiredArgsConstructor
-public class URLEntity {
+public class URLDocument extends AbstractDocument {
 	
-	@Id
-	private String id;
-	
-	@NonNull
+	@NotNull
 	private final String originalUrl;
 	
 	@Setter
 	@Indexed(unique = true)
 	private String shortUrlKey;
 	
+	@Setter
+	@Indexed
+	private UrlStatus status;
+	
 	private Date createdAt = new Date();
 	
 	@Setter
-	private Date updatedAt = new Date();
+	@Field
+	@Indexed
+	@NonNull
+	@NotNull
+	private Date validTill;
 	
+	@Setter
+	private Date expiredAt;
 
 }

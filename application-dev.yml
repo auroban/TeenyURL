@@ -4,6 +4,10 @@ spring:
       host: localhost
       port: 27017
       database: url_service
+#mongodb:
+#  host: localhost
+#  port: 27017
+#  database: url_service
 server:
   port: 3001
 short_url:
