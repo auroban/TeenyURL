@@ -30,7 +30,7 @@ import in.turls.lib.models.api.ApiRequest;
 import in.turls.lib.models.api.ApiResponse;
 import in.turls.lib.models.url.UrlExpiry;
 import in.turls.lib.services.interfaces.URLManagerService;
-import in.turls.lib.utils.ApiRequestValidator;
+import in.turls.lib.validators.ApiRequestValidator;
 import lombok.NonNull;
 
 @RestController

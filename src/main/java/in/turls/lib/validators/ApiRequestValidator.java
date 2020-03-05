@@ -1,4 +1,4 @@
-package in.turls.lib.utils;
+package in.turls.lib.validators;
 
 import in.turls.lib.constants.UrlExpiryUnit;
 import in.turls.lib.exceptions.InvalidUrlExpiry;
@@ -28,16 +28,19 @@ public class ApiRequestValidator {
 			break;
 		case WEEKS:
 		case MONTHS:
-		case YEARS:
 			String message;
 			if (value.intValue() < 1) {
 				if (UrlExpiryUnit.WEEKS.equals(unit)) {
 					message = "When URL Expiry \"unit\" selected is WEEKS, \"value\" cannot be less than 3";
-				} else if (UrlExpiryUnit.MONTHS.equals(unit)) {
-					message = "When URL Expiry \"unit\" selected is MONTHS, \"value\" cannot be less than 1";
 				} else {
-					message = "When URL Expiry \"unit\" selected is YEARS, \"value\" cannot be less than 1";
-				}
+					message = "When URL Expiry \"unit\" selected is MONTHS, \"value\" cannot be less than 1";
+				} 
+				throw new InvalidUrlExpiry(message);
+			}
+			break;
+		case YEARS:
+			if (value.intValue() <=0 || value.intValue() > 1) {
+				message = "When URL Expiry \"unit\" selected is YEARS, \"value\" cannot be anything but 1";
 				throw new InvalidUrlExpiry(message);
 			}
 			break;
