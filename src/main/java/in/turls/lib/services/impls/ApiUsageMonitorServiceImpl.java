@@ -28,7 +28,6 @@ public class ApiUsageMonitorServiceImpl implements ApiUsageMonitorService {
 
 	@Override
 	public Boolean isAllowed(final HttpServletRequest request) {
-
 		String ipAddress = request.getHeader("X-Real-IP");
 		LOG.info("Checking API usage for IP: {}", ipAddress);
 		RMapCache<String, Integer> apiUsageMapCache = redissonClient.getMapCache(API_USAGE_MAP_NAME);

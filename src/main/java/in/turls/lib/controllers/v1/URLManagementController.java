@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,9 +43,12 @@ public class URLManagementController {
 
 	@Autowired
 	private URLManagerService urlManagerService;
-
+	
+	private static final String ALLOWED_ORIGINS = "http://localhost:5000";
+	
 	@Async("asyncExecutor")
 	@PostMapping
+	@CrossOrigin(origins = ALLOWED_ORIGINS, allowedHeaders = "*")
 	public CompletableFuture<ResponseEntity<?>> createShortUrl(
 			@RequestBody @Validated ApiRequest apiRequest) {
 

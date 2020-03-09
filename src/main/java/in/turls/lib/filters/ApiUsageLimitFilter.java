@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,10 +38,17 @@ public class ApiUsageLimitFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 
-		LOG.info("API Filter Request handled by Thread {} -> {}", Thread.currentThread().getName(),
-				Thread.currentThread().getId());
 		final HttpServletRequest httpServletRequest = HttpServletRequest.class.cast(request);
 		HttpServletResponse httpServletResponse = HttpServletResponse.class.cast(response);
+
+		String requestMethod = httpServletRequest.getMethod();
+		if (requestMethod.equals(HttpMethod.OPTIONS.name())) {
+			LOG.info("Getting OPTIONS request. Probably pre-flight request sent by browser");
+			LOG.info("Skipping IP Allowance check");
+			chain.doFilter(httpServletRequest, httpServletResponse);
+			return;
+		}
+
 		try {
 			LOG.info("Checking usgae limit for IP: {}", httpServletRequest.getHeader("X-Real-IP"));
 			Boolean allowed = apiUsageMonitorService.isAllowed(httpServletRequest);
@@ -50,7 +58,7 @@ public class ApiUsageLimitFilter implements Filter {
 			} else {
 				LOG.warn("IP: {} reached its usage limit. Blocking any further calls",
 						httpServletRequest.getHeader("X-Real-IP"));
-				ApiResponse errorResponse = new ApiResponse();
+				ApiResponse<String> errorResponse = new ApiResponse<>();
 				errorResponse.setStatus(ApiRequestStatus.FAILURE);
 				errorResponse.setMessage(
 						"You have reached the API usage limit. Only 10 requests allowed per hour. Please try after the time specified in Retry-After header");
