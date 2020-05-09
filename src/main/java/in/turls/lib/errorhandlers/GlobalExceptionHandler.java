@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
 		LOG.error("Handling invalid method argument:\n", exception);
 		String message = exception.getMessage();
 		if (message.contains("longUrl")) {
-			apiResponse.setErrorCode(ApiRequestErrorCode.INVALID_REQUEST_PARAMETER);
+			apiResponse.setErrorCode(ApiRequestErrorCode.INVALID_URL_LENGTH);
 			apiResponse.setMessage("Invalid URL Length. URL length must be between 8 and 200");
 			apiResponse.setStatus(ApiRequestStatus.FAILURE);
 			return new ResponseEntity<ApiResponse<Void>>(apiResponse, HttpStatus.BAD_REQUEST);

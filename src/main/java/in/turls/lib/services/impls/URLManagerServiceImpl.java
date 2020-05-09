@@ -17,11 +17,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.JsonObject;
-
 import in.turls.lib.constants.UrlExpiryUnit;
 import in.turls.lib.constants.UrlStatus;
 import in.turls.lib.documents.url.URLDocument;
+import in.turls.lib.models.url.ShortUrlInfo;
 import in.turls.lib.repositories.URLRepository;
 import in.turls.lib.services.interfaces.CounterService;
 import in.turls.lib.services.interfaces.URLManagerService;
@@ -46,7 +45,7 @@ public class URLManagerServiceImpl implements URLManagerService {
 	private RedissonClient redissonClient;
 
 	@Override
-	public Optional<JsonObject> createShortUrlKey(String longUrl, UrlExpiryUnit expiryUnit, Integer expiryValue) throws DuplicateKeyException, NoSuchElementException {
+	public Optional<ShortUrlInfo> createShortUrlKey(String longUrl, UrlExpiryUnit expiryUnit, Integer expiryValue) throws DuplicateKeyException, NoSuchElementException {
 
 		Long counter = counterService.getNextCounterNumber();
 		LOG.info("Selecting counter number: {}", counter);
@@ -61,12 +60,12 @@ public class URLManagerServiceImpl implements URLManagerService {
 		urlEntity.setStatus(UrlStatus.ACTIVE);
 		urlEntity = urlRepository.save(urlEntity);
 		LOG.info("Saved URL Document: {}", urlEntity);
-		JsonObject urlJsonObject = new JsonObject();
+		ShortUrlInfo shortUrlInfo = new ShortUrlInfo();
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy'T'hh:mm:ssXXX");
-		urlJsonObject.addProperty("key", urlEntity.getShortUrlKey());
-		urlJsonObject.addProperty("completeUrl", shortUrlDomain + urlEntity.getShortUrlKey());
-		urlJsonObject.addProperty("validity", simpleDateFormat.format(urlEntity.getValidTill()));
-		return Optional.of(urlJsonObject);
+		shortUrlInfo.setKey(urlEntity.getShortUrlKey());
+		shortUrlInfo.setCompleteUrl(shortUrlDomain + urlEntity.getShortUrlKey());
+		shortUrlInfo.setExpiry(simpleDateFormat.format(urlEntity.getValidTill()));
+		return Optional.of(shortUrlInfo);
 	}
 
 	@Override

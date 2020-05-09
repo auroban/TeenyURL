@@ -21,14 +21,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.gson.JsonObject;
-
 import in.turls.lib.constants.ApiRequestErrorCode;
 import in.turls.lib.constants.ApiRequestStatus;
 import in.turls.lib.constants.UrlExpiryUnit;
-import in.turls.lib.exceptions.InvalidUrlExpiry;
+import in.turls.lib.exceptions.InvalidUrlExpiryUnit;
+import in.turls.lib.exceptions.InvalidUrlExpiryValue;
 import in.turls.lib.models.api.ApiRequest;
 import in.turls.lib.models.api.ApiResponse;
+import in.turls.lib.models.url.ShortUrlInfo;
 import in.turls.lib.models.url.UrlExpiry;
 import in.turls.lib.services.interfaces.URLManagerService;
 import in.turls.lib.validators.ApiRequestValidator;
@@ -44,7 +44,7 @@ public class URLManagementController {
 	@Autowired
 	private URLManagerService urlManagerService;
 	
-	private static final String ALLOWED_ORIGINS = "http://localhost:5000";
+	private static final String ALLOWED_ORIGINS = "*";
 	
 	@Async("asyncExecutor")
 	@PostMapping
@@ -53,36 +53,34 @@ public class URLManagementController {
 			@RequestBody @Validated ApiRequest apiRequest) {
 
 		LOG.info("Incoming Request for creating short URL: {}", apiRequest);
-		ApiResponse<JsonObject> response = new ApiResponse<>();
+		ApiResponse<ShortUrlInfo> response = new ApiResponse<>();
 		String longUrl = apiRequest.getLongUrl();
 		if (!StringUtils.hasText(longUrl) || !URL_VALIDATOR.isValid(longUrl)) {
 			LOG.error("Invalid Long URL:{}", longUrl);
 			response.setStatus(ApiRequestStatus.FAILURE);
 			response.setMessage("Invalid URL. Please ensure the URL is not missing any URL scemes like http or https");
-			response.setErrorCode(ApiRequestErrorCode.INVALID_REQUEST_PARAMETER);
+			response.setErrorCode(ApiRequestErrorCode.INVALID_URL_SCHEME);
 			return CompletableFuture
-					.completedFuture(new ResponseEntity<ApiResponse<JsonObject>>(response, HttpStatus.BAD_REQUEST));
+					.completedFuture(new ResponseEntity<ApiResponse<ShortUrlInfo>>(response, HttpStatus.BAD_REQUEST));
 		}
 
 		try {
 			ApiRequestValidator.validateApiRequest(apiRequest);
-		} catch (InvalidUrlExpiry e) {
+		} catch (InvalidUrlExpiryUnit | InvalidUrlExpiryValue e) {
 			LOG.error("Error while validating ApiRequest", e);
 			String message = e.getMessage();
 			response.setStatus(ApiRequestStatus.FAILURE);
-			response.setErrorCode(ApiRequestErrorCode.INVALID_REQUEST_PARAMETER);
+			ApiRequestErrorCode errorCode = null;
+			if (e instanceof InvalidUrlExpiryUnit) {
+				errorCode = ApiRequestErrorCode.INVALID_URL_EXPIRY_UNIT;
+			} else {
+				errorCode = ApiRequestErrorCode.INVALID_URL_EXPIRY_VALUE;
+			}
+			response.setErrorCode(errorCode);
 			response.setMessage(message);
 			response.setResponse(null);
 			return CompletableFuture
-					.completedFuture(new ResponseEntity<ApiResponse<JsonObject>>(response, HttpStatus.BAD_REQUEST));
-		} catch (IllegalArgumentException e) {
-			LOG.error("Error while validating ApiRequest", e);
-			response.setStatus(ApiRequestStatus.FAILURE);
-			response.setErrorCode(ApiRequestErrorCode.INVALID_REQUEST_PARAMETER);
-			response.setMessage("Please enter valid expiry unit");
-			response.setResponse(null);
-			return CompletableFuture
-					.completedFuture(new ResponseEntity<ApiResponse<JsonObject>>(response, HttpStatus.BAD_REQUEST));
+					.completedFuture(new ResponseEntity<ApiResponse<ShortUrlInfo>>(response, HttpStatus.BAD_REQUEST));
 		}
 
 		UrlExpiryUnit unit = UrlExpiryUnit.MONTHS;
@@ -93,14 +91,14 @@ public class URLManagementController {
 			unit = urlExpiry.getUnit();
 			value = urlExpiry.getValue();
 		}
-		JsonObject urlObject = urlManagerService.createShortUrlKey(apiRequest.getLongUrl(), unit, value).get();
+		ShortUrlInfo shortUrlInfo = urlManagerService.createShortUrlKey(apiRequest.getLongUrl(), unit, value).get();
 		
 		response.setStatus(ApiRequestStatus.SUCCESS);
 		response.setErrorCode(null);
 		response.setMessage("Successfully created short URL");
-		response.setResponse(urlObject);
+		response.setResponse(shortUrlInfo);
 		LOG.debug("Outgoing Response: {}", response);
-		return CompletableFuture.completedFuture(new ResponseEntity<ApiResponse<JsonObject>>(response, HttpStatus.OK));
+		return CompletableFuture.completedFuture(new ResponseEntity<ApiResponse<ShortUrlInfo>>(response, HttpStatus.OK));
 	}
 	
 
@@ -115,7 +113,7 @@ public class URLManagementController {
 			if (StringUtils.isEmpty(id)) {
 				apiResponse.setStatus(ApiRequestStatus.FAILURE);
 				apiResponse.setMessage("Invalid ID");
-				apiResponse.setErrorCode(ApiRequestErrorCode.INVALID_ID);
+				apiResponse.setErrorCode(ApiRequestErrorCode.INVALID_SHORT_URL_ID);
 				return CompletableFuture
 						.completedFuture(new ResponseEntity<ApiResponse<Void>>(apiResponse, HttpStatus.BAD_REQUEST));
 			}
@@ -134,6 +132,7 @@ public class URLManagementController {
 
 		apiResponse.setStatus(ApiRequestStatus.FAILURE);
 		apiResponse.setMessage("Failed to delete URL since given short URL doesn't exist");
+		apiResponse.setErrorCode(ApiRequestErrorCode.INVALID_SHORT_URL_ID);
 		return CompletableFuture.completedFuture(new ResponseEntity<ApiResponse<Void>>(apiResponse, HttpStatus.OK));
 
 	}
